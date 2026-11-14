@@ -29,24 +29,28 @@ import {
 export const KINDS = [
   {
     id: "support-now",
+    icon: "chat",
     label: "Talking to someone today",
     about: "For when you've had a hard day and want to talk with someone now. These are phone lines and chats. No appointment needed.",
     cost: "Usually free.",
   },
   {
     id: "short-term",
+    icon: "sprout",
     label: "Short-term counseling",
     about: "A few visits to work through stress, a breakup, or pressure from school or family.",
     cost: "Free to low cost at many places. Call to confirm.",
   },
   {
     id: "ongoing",
+    icon: "calendar",
     label: "Ongoing therapy",
     about: "Regular visits, often once a week, for when you've felt down or worried for weeks and want steady support.",
     cost: "Uses insurance, or a sliding scale based on what you earn. Call to confirm.",
   },
   {
     id: "medication",
+    icon: "clipboard",
     label: "A medication evaluation",
     about: "A visit with a prescriber to talk about whether medicine might help. You decide together.",
     cost: "Often uses insurance. Some clinics are free or use a sliding scale. Call to confirm.",
@@ -144,6 +148,54 @@ function telHref(display) {
   return "tel:+1" + String(display).replace(/\D/g, "");
 }
 
+// Simple line icons, drawn for this project. Always decorative (aria-hidden):
+// every icon sits next to words that say the same thing.
+const ICONS = {
+  door: '<path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><path d="M9 21V7l6-1.5V21"/><circle cx="13" cy="13.5" r=".6" fill="currentColor"/>',
+  lifebuoy: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.6"/><path d="m5.6 5.6 3.9 3.9M14.5 14.5l3.9 3.9M18.4 5.6l-3.9 3.9M9.5 14.5l-3.9 3.9"/>',
+  chat: '<path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 13h5"/>',
+  calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="m9 15 2 2 4-4"/>',
+  compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+  sprout: '<path d="M12 21v-9"/><path d="M12 12c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 14c0-3-2.5-5-6-5 0 3 2.5 5 6 5z"/>',
+  clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 10h6M9 14h6M9 18h3"/>',
+  phone: '<path d="M6.6 3.5h2.6l1.4 4-2 1.3a11 11 0 0 0 6.6 6.6l1.3-2 4 1.4v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/>',
+  message: '<path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9l-5 4V5a1 1 0 0 1 1-1z"/><circle cx="8.5" cy="10.5" r=".7" fill="currentColor"/><circle cx="12" cy="10.5" r=".7" fill="currentColor"/><circle cx="15.5" cy="10.5" r=".7" fill="currentColor"/>',
+  check: '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9.5"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  tag: '<path d="M3.5 12.3V4.5a1 1 0 0 1 1-1h7.8l8.2 8.2a1 1 0 0 1 0 1.4l-7.8 7.8a1 1 0 0 1-1.4 0z"/><circle cx="8" cy="8" r="1.4"/>',
+  person: '<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.8-4 3.8-6 7.5-6s6.7 2 7.5 6"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z"/>',
+  monitor: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  pin: '<path d="M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+  door2: '<path d="M6 20V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v15"/><path d="M4 20h16"/><circle cx="14.5" cy="12.5" r=".8" fill="currentColor"/>',
+  heart: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+  copy: '<rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2"/><path d="M15.5 8.5V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v9.5a1 1 0 0 0 1 1h3.5"/>',
+  flag: '<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
+  chevron: '<path d="m9.5 6 6 6-6 6"/>',
+  back: '<path d="m14.5 6-6 6 6 6"/>',
+  shield: '<path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6z"/><path d="m8.8 12 2.2 2.2 4.2-4.4"/>',
+  external: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+};
+
+export function icon(name, cls = "icon") {
+  return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name] ?? ""}</svg>`;
+}
+
+// The start-screen illustration: an open front door with warm light coming through.
+function doorIllustration() {
+  return `<svg class="hero-art" viewBox="0 0 160 140" aria-hidden="true" focusable="false">
+  <circle cx="108" cy="46" r="34" fill="#FDBB30" opacity=".28"/>
+  <circle cx="108" cy="46" r="20" fill="#FDBB30" opacity=".35"/>
+  <path d="M10 128h140" stroke="#00543C" stroke-width="3" stroke-linecap="round"/>
+  <rect x="44" y="26" width="58" height="102" rx="4" fill="#FFF8E6" stroke="#00543C" stroke-width="3"/>
+  <path d="M50 128 L96 128 L118 140 L32 140 Z" fill="#FDBB30" opacity=".35"/>
+  <path d="M47 29 L76 38 L76 122 L47 126 Z" fill="#00543C"/>
+  <circle cx="70" cy="80" r="2.6" fill="#FDBB30"/>
+  <path d="M20 128c0-10 6-16 12-16s12 6 12 16" fill="#E4EFE9" stroke="#00543C" stroke-width="2"/>
+  <path d="M128 128c0-14 7-22 12-22s8 8 8 22" fill="#E4EFE9" stroke="#00543C" stroke-width="2"/>
+</svg>`;
+}
+
 export function freshState() {
   return {
     path: null,
@@ -172,21 +224,21 @@ function isSafeHttpUrl(url) {
 
 export function crisisBar() {
   return `<aside class="crisis-bar" aria-label="Crisis help">
-  <p><strong>In danger now?</strong>
-    <a href="${CRISIS.emergency.tel}">Call 911</a> ·
-    <a href="${CRISIS.lifeline.tel}" aria-label="Call 988">Call</a> or <a href="${CRISIS.lifeline.sms}" aria-label="Text 988">text</a> 988 ·
-    CAPS 24/7: <a href="${CRISIS.capsAllHours.tel}" aria-label="Call CAPS All Hours at ${CRISIS.capsAllHours.display}">${CRISIS.capsAllHours.display}</a></p>
+  <p><strong class="crisis-label">In danger now?</strong>
+    <a href="${CRISIS.emergency.tel}">Call 911</a> <span aria-hidden="true">·</span>
+    <a href="${CRISIS.lifeline.tel}" aria-label="Call 988">Call</a> or <a href="${CRISIS.lifeline.sms}" aria-label="Text 988">text</a> 988 <span aria-hidden="true">·</span>
+    <span class="nowrap">CAPS 24/7: <a href="${CRISIS.capsAllHours.tel}" aria-label="Call CAPS All Hours at ${CRISIS.capsAllHours.display}">${CRISIS.capsAllHours.display}</a></span></p>
 </aside>`;
 }
 
 function footer(feedbackUrl) {
   const feedback = isSafeHttpUrl(feedbackUrl)
-    ? `<li><a href="${esc(feedbackUrl)}" target="_blank" rel="noopener noreferrer">Give feedback on this prototype<span class="visually-hidden"> (opens in a new tab)</span></a></li>`
+    ? `<li><a href="${esc(feedbackUrl)}" target="_blank" rel="noopener noreferrer">Give feedback on this prototype${icon("external", "icon icon-sm")}<span class="visually-hidden"> (opens in a new tab)</span></a></li>`
     : "";
   return `<footer class="site-footer">
   <div class="wrap">
     <ul class="footer-links">
-      <li><a href="#/how-we-verify">How we verify</a></li>
+      <li><a href="#/how-we-verify">${icon("shield", "icon icon-sm")}How we verify</a></li>
       ${feedback}
     </ul>
     <p>A student project for the Horizon Collective at USF. Not an official USF or CAPS service.</p>
@@ -196,12 +248,12 @@ function footer(feedbackUrl) {
 
 function layout(main, ctx) {
   return `<a class="skip-link" href="#main">Skip to main content</a>
-<div class="proto-banner" role="note">Prototype for class testing. Listings are made-up samples. In an emergency, call 911.</div>
+<div class="proto-banner" role="note"><span class="proto-pill" aria-hidden="true">Prototype</span> Prototype for class testing. Listings are made-up samples. In an emergency, call 911.</div>
 ${crisisBar()}
 <header class="site-header">
   <div class="wrap header-row">
-    <a class="brand" href="#/start">Front Door</a>
-    <button type="button" class="btn btn-quiet" data-action="start-over" data-key="start-over">Start over</button>
+    <a class="brand" href="#/start"><span class="brand-mark">${icon("door2")}</span>Front Door</a>
+    <button type="button" class="btn btn-quiet btn-small" data-action="start-over" data-key="start-over">Start over</button>
   </div>
 </header>
 <main id="main" class="wrap" tabindex="-1">
@@ -210,10 +262,27 @@ ${main}
 ${footer(ctx.feedbackUrl ?? FEEDBACK_FORM_URL)}`;
 }
 
+/** "Step 2 of 3" so students always know how much is left. */
+function progress(state, screen) {
+  const flows = {
+    ongoing: ["start", "coverage", "results"],
+    unsure: ["start", "kinds", "coverage", "results"],
+  };
+  const flow = flows[state.path];
+  if (!flow) return "";
+  const i = flow.indexOf(screen);
+  if (i < 1) return "";
+  const pct = Math.round(((i + 1) / flow.length) * 100);
+  return `<div class="progress">
+  <span class="progress-text">Step ${i + 1} of ${flow.length}</span>
+  <span class="progress-track" aria-hidden="true"><span class="progress-fill" style="width:${pct}%"></span></span>
+</div>`;
+}
+
 function badge(listing) {
   const status = getStatus(listing);
-  const cls = status === STATUS.DUE ? "badge badge-due" : "badge badge-ok";
-  return `<p class="${cls}"><span class="badge-dot" aria-hidden="true"></span>${esc(statusBadgeText(listing))}</p>`;
+  const due = status === STATUS.DUE;
+  return `<p class="badge ${due ? "badge-due" : "badge-ok"}">${icon(due ? "clock" : "check", "icon icon-sm")}${esc(statusBadgeText(listing))}</p>`;
 }
 
 function sampleTag() {
@@ -222,85 +291,94 @@ function sampleTag() {
 
 function facts(listing, { full = false } = {}) {
   const rows = [
-    ["Cost", listing.cost_note],
-    ["Ages", agesText(listing)],
-    ["Languages", listing.languages.join(", ")],
-    ["How", modeText(listing)],
+    ["tag", "Cost", listing.cost_note, "fact-cost"],
+    ["person", "Ages", agesText(listing)],
+    ["globe", "Languages", listing.languages.join(", ")],
+    [listing.mode === "in-person" ? "pin" : "monitor", "How", modeText(listing)],
   ];
-  if (full) rows.push(["Area", listing.area || "Online only"]);
-  rows.push(["Openings", newClientsText(listing)]);
+  if (full) rows.push(["pin", "Area", listing.area || "Online only"]);
+  rows.push(["calendar", "Openings", newClientsText(listing)]);
   return `<dl class="facts">${rows
-    .map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`)
+    .map(
+      ([ic, k, v, cls = ""]) =>
+        `<div class="fact ${cls}"><dt>${icon(ic, "icon icon-sm")}${k}</dt><dd>${esc(v)}</dd></div>`
+    )
     .join("")}</dl>`;
 }
 
 function realOptions(heading = "Talk to someone now, any time") {
   return `<section class="real-options" aria-labelledby="real-options-h">
   <h2 id="real-options-h">${heading}</h2>
-  <p class="muted">These are real, free, and open 24/7.</p>
+  <p class="muted">These are real, free, and open 24/7. Reaching out is a strong step.</p>
   <ul class="real-list">
     <li class="real-card">
       <h3>988 Suicide &amp; Crisis Lifeline</h3>
       <p>Free. Call or text any time, day or night. You don't have to be in danger to reach out.</p>
       <div class="btn-row">
-        <a class="btn btn-primary" href="${CRISIS.lifeline.tel}">Call 988</a>
-        <a class="btn btn-secondary" href="${CRISIS.lifeline.sms}">Text 988</a>
+        <a class="btn btn-primary" href="${CRISIS.lifeline.tel}">${icon("phone")}Call 988</a>
+        <a class="btn btn-secondary" href="${CRISIS.lifeline.sms}">${icon("message")}Text 988</a>
       </div>
     </li>
     <li class="real-card">
       <h3>CAPS All Hours</h3>
       <p>Free for USF students. Talk with a counselor by phone any time.</p>
       <div class="btn-row">
-        <a class="btn btn-primary" href="${CRISIS.capsAllHours.tel}">Call ${CRISIS.capsAllHours.display}</a>
+        <a class="btn btn-primary" href="${CRISIS.capsAllHours.tel}">${icon("phone")}Call ${CRISIS.capsAllHours.display}</a>
       </div>
     </li>
   </ul>
 </section>`;
 }
 
+function choice({ href, title, note, ic, key, attrs = "", cls = "" }) {
+  return `<li><a class="choice ${cls}" href="${href}" data-key="${key}"${attrs}>
+    <span class="choice-icon">${icon(ic)}</span>
+    <span class="choice-text"><span class="choice-title">${title}</span>
+    <span class="choice-note">${note}</span></span>
+    ${icon("chevron", "icon choice-chevron")}</a></li>`;
+}
+
 // ---------- Screens ----------
 
 function startScreen() {
-  return `<h1 tabindex="-1">What's going on?</h1>
-<p class="lead">Pick the one that fits best. There are no wrong answers, and you can start over any time.</p>
+  return `<section class="hero">
+  <div class="hero-text">
+    <h1 tabindex="-1">What's going on?</h1>
+    <p class="lead">Pick the one that fits best. There are no wrong answers, and you can start over any time.</p>
+  </div>
+  ${doorIllustration()}
+</section>
 <ul class="choice-list">
-  <li><a class="choice choice-urgent" href="#/danger" data-key="path-danger">
-    <span class="choice-title">I'm not safe right now</span>
-    <span class="choice-note">Get help right away.</span></a></li>
-  <li><a class="choice" href="#/results" data-action="set-path" data-path="soon" data-key="path-soon">
-    <span class="choice-title">${PATHS.soon}</span>
-    <span class="choice-note">See free 24/7 options and counseling you can start soon.</span></a></li>
-  <li><a class="choice" href="#/coverage" data-action="set-path" data-path="ongoing" data-key="path-ongoing">
-    <span class="choice-title">${PATHS.ongoing}</span>
-    <span class="choice-note">Find care that keeps going, and a way to pay for it.</span></a></li>
-  <li><a class="choice" href="#/kinds" data-action="set-path" data-path="unsure" data-key="path-unsure">
-    <span class="choice-title">${PATHS.unsure}</span>
-    <span class="choice-note">See the four kinds of help in plain words.</span></a></li>
+  ${choice({ href: "#/danger", title: "I'm not safe right now", note: "Get help right away.", ic: "lifebuoy", key: "path-danger", cls: "choice-urgent" })}
+  ${choice({ href: "#/results", title: PATHS.soon, note: "See free 24/7 options and counseling you can start soon.", ic: "chat", key: "path-soon", attrs: ' data-action="set-path" data-path="soon"' })}
+  ${choice({ href: "#/coverage", title: PATHS.ongoing, note: "Find care that keeps going, and a way to pay for it.", ic: "calendar", key: "path-ongoing", attrs: ' data-action="set-path" data-path="ongoing"' })}
+  ${choice({ href: "#/kinds", title: PATHS.unsure, note: "See the four kinds of help in plain words.", ic: "compass", key: "path-unsure", attrs: ' data-action="set-path" data-path="unsure"' })}
 </ul>
-<p class="muted small">We don't ask for your name, and we don't save your answers.</p>`;
+<p class="privacy-note">${icon("shield", "icon icon-sm")}We don't ask for your name, and we don't save your answers.</p>`;
 }
 
 function dangerScreen() {
   return `<h1 tabindex="-1">Get help right now</h1>
 <div class="danger-actions">
-  <a class="btn btn-danger btn-big" href="${CRISIS.emergency.tel}">Call 911</a>
-  <a class="btn btn-primary btn-big" href="${CRISIS.lifeline.tel}">Call 988</a>
-  <a class="btn btn-primary btn-big" href="${CRISIS.lifeline.sms}">Text 988</a>
-  <a class="btn btn-primary btn-big" href="${CRISIS.capsAllHours.tel}">Call CAPS All Hours<span class="btn-sub">${CRISIS.capsAllHours.display}</span></a>
+  <a class="btn btn-danger btn-big" href="${CRISIS.emergency.tel}">${icon("phone")}Call 911</a>
+  <a class="btn btn-primary btn-big" href="${CRISIS.lifeline.tel}">${icon("phone")}Call 988</a>
+  <a class="btn btn-primary btn-big" href="${CRISIS.lifeline.sms}">${icon("message")}Text 988</a>
+  <a class="btn btn-primary btn-big" href="${CRISIS.capsAllHours.tel}">${icon("phone")}<span>Call CAPS All Hours<span class="btn-sub">${CRISIS.capsAllHours.display}</span></span></a>
 </div>
-<p class="danger-line">If you can, stay with someone you trust.</p>`;
+<p class="danger-line">${icon("heart")}If you can, stay with someone you trust.</p>`;
 }
 
-function kindsScreen() {
+function kindsScreen(ctx) {
   const cards = KINDS.map(
     (k) => `<li class="card kind-card">
-    <h2>${k.label}</h2>
+    <div class="kind-head"><span class="choice-icon">${icon(k.icon)}</span><h2>${k.label}</h2></div>
     <p>${k.about}</p>
-    <p><strong>Cost:</strong> ${k.cost}</p>
-    <a class="btn btn-primary" href="#/coverage" data-action="set-kind" data-kind="${k.id}" data-key="kind-${k.id}">Continue with this<span class="visually-hidden">: ${k.label}</span></a>
+    <p class="cost-pill">${icon("tag", "icon icon-sm")}<span><strong>Cost:</strong> ${k.cost}</span></p>
+    <a class="btn btn-primary" href="#/coverage" data-action="set-kind" data-kind="${k.id}" data-key="kind-${k.id}">Continue with this<span class="visually-hidden">: ${k.label}</span>${icon("chevron")}</a>
   </li>`
   ).join("");
-  return `<h1 tabindex="-1">Four kinds of help</h1>
+  return `${progress({ path: "unsure" }, "kinds")}
+<h1 tabindex="-1">Four kinds of help</h1>
 <p class="lead">It's okay not to know. Here's what each kind is like. Pick the one that sounds closest. You can change it later.</p>
 <ul class="card-list">${cards}</ul>`;
 }
@@ -309,13 +387,15 @@ function coverageScreen(ctx) {
   const { state } = ctx;
   const chosenKind = state.kind ? `<p class="answer-note">You picked: <strong>${kindLabel(state.kind)}</strong>. <a href="#/kinds">Change</a></p>` : "";
   const items = COVERAGE.map(
-    (c) => `<li><a class="choice" href="#/results" data-action="set-coverage" data-coverage="${c.id}" data-key="cov-${c.id}"${
+    (c) => `<li><a class="choice choice-plain" href="#/results" data-action="set-coverage" data-coverage="${c.id}" data-key="cov-${c.id}"${
       state.coverage === c.id ? ' aria-current="true"' : ""
     }>
-    <span class="choice-title">${esc(c.label)}</span>
-    <span class="choice-note">${esc(c.note)}</span></a></li>`
+    <span class="choice-text"><span class="choice-title">${esc(c.label)}</span>
+    <span class="choice-note">${esc(c.note)}</span></span>
+    ${icon("chevron", "icon choice-chevron")}</a></li>`
   ).join("");
-  return `<h1 tabindex="-1">How will you pay for care?</h1>
+  return `${progress({ path: state.path || "ongoing" }, "coverage")}
+<h1 tabindex="-1">How will you pay for care?</h1>
 ${chosenKind}
 <p class="lead">This helps us show options you can afford. We don't save your answer.</p>
 <ul class="choice-list">${items}</ul>`;
@@ -338,22 +418,24 @@ function filtersBlock(filters, open) {
     <span class="chip-group-label" id="fg-lgbtq">Identity</span>
     <div class="chips">${chip("lgbtq", "true", "LGBTQ+ affirming", filters.lgbtq)}</div>
   </div>`;
-  const clear = hasActiveFilters(filters)
-    ? `<button type="button" class="btn btn-quiet" data-action="clear-filters" data-key="clear-filters">Clear filters</button>`
+  const active = hasActiveFilters(filters);
+  const clear = active
+    ? `<button type="button" class="btn btn-quiet btn-small" data-action="clear-filters" data-key="clear-filters">Clear filters</button>`
     : "";
-  return `<details class="filters"${open || hasActiveFilters(filters) ? " open" : ""}>
-  <summary data-key="filters-summary">Filter results${hasActiveFilters(filters) ? " (on)" : ""}</summary>
+  return `<details class="filters"${open || active ? " open" : ""}>
+  <summary data-key="filters-summary"><span>Filter results${active ? ' <span class="on-dot">on</span>' : ""}</span>${icon("chevron", "icon summary-chevron")}</summary>
   <div class="filters-body">${groups}${lgbtq}${clear}</div>
 </details>`;
 }
 
 function listingCard(l) {
+  const href = `#/listing/${encodeURIComponent(l.id)}`;
   return `<li class="card listing-card">
-  <h3 class="card-title"><a href="#/listing/${encodeURIComponent(l.id)}" data-key="card-${esc(l.id)}">${esc(l.name)}</a> ${sampleTag()}</h3>
-  ${badge(l)}
-  <p>${esc(l.summary)}</p>
+  <div class="card-top">${badge(l)}${sampleTag()}</div>
+  <h3 class="card-title"><a href="${href}" data-key="card-${esc(l.id)}">${esc(l.name)}</a></h3>
+  <p class="card-summary">${esc(l.summary)}</p>
   ${facts(l)}
-  <a class="btn btn-secondary" href="#/listing/${encodeURIComponent(l.id)}">See details and what to say<span class="visually-hidden">: ${esc(l.name)}</span></a>
+  <a class="btn btn-secondary btn-block" href="${href}">See details and what to say<span class="visually-hidden">: ${esc(l.name)}</span>${icon("chevron")}</a>
 </li>`;
 }
 
@@ -413,17 +495,18 @@ ${isSoon ? "" : realOptions("You can still talk to someone now")}`;
   } else {
     const more =
       filtered.length > shown.length
-        ? `<button type="button" class="btn btn-secondary btn-wide" data-action="show-more" data-key="show-more">Show ${filtered.length - shown.length} more</button>`
+        ? `<button type="button" class="btn btn-secondary btn-block" data-action="show-more" data-key="show-more">Show ${filtered.length - shown.length} more</button>`
         : "";
     list = `<ul class="card-list">${shown.map(listingCard).join("")}</ul>${more}`;
   }
 
-  return `<h1 tabindex="-1">${isSoon ? "Help you can reach soon" : "Options for you"}</h1>
+  return `${progress(state, "results")}
+<h1 tabindex="-1">${isSoon ? "Help you can reach soon" : "Options for you"}</h1>
 ${answersSummary(state)}
 ${isSoon ? realOptions() : ""}
 <section aria-labelledby="sample-h">
   <h2 id="sample-h">${isSoon ? "Support now and short-term counseling" : "Matching options"}</h2>
-  <p class="muted small">Every option was confirmed by our team in the last ${HIDE_AFTER_DAYS} days. Costs and openings can change, so call to confirm.</p>
+  <p class="trust-note">${icon("shield", "icon icon-sm")}<span>Every option was confirmed by our team in the last ${HIDE_AFTER_DAYS} days. Costs and openings can change, so call to confirm.</span></p>
   ${isSoon ? coverageSelect(state) : ""}
   ${filtersBlock(state.filters, state.filtersOpen)}
   <p class="result-count" role="status" aria-live="polite">Showing ${shown.length} of ${filtered.length} ${filtered.length === 1 ? "option" : "options"}.</p>
@@ -433,9 +516,8 @@ ${isSoon ? realOptions() : ""}
 }
 
 function backToResults(state) {
-  return state.path || state.coverage
-    ? `<p><a href="#/results">← Back to your results</a></p>`
-    : `<p><a href="#/results">← See all options</a></p>`;
+  const label = state.path || state.coverage ? "Back to your results" : "See all options";
+  return `<p class="back-link"><a href="#/results">${icon("back", "icon icon-sm")}${label}</a></p>`;
 }
 
 function notAvailable(listing, state) {
@@ -454,27 +536,30 @@ function listingScreen(ctx, id) {
   const l = listings.find((x) => x.id === id);
   if (!l || !isVisible(l)) return notAvailable(l, state);
   return `${backToResults(state)}
-<h1 tabindex="-1">${esc(l.name)} ${sampleTag()}</h1>
-${badge(l)}
-<p class="lead">${esc(l.summary)}</p>
-${facts(l, { full: true })}
+<section class="listing-head">
+  <div class="card-top">${badge(l)}${sampleTag()}</div>
+  <h1 tabindex="-1">${esc(l.name)}</h1>
+  <p class="lead">${esc(l.summary)}</p>
+</section>
+<div class="card">${facts(l, { full: true })}</div>
 <section class="panel" aria-labelledby="contact-h">
   <h2 id="contact-h">How to start</h2>
   <p>${esc(l.how_to_start)}</p>
   <div class="btn-row">
-    <a class="btn btn-primary" href="${telHref(l.phone)}">Call ${esc(l.phone)}</a>
-    <a class="btn btn-secondary" href="${esc(l.web)}" target="_blank" rel="noopener noreferrer">Website<span class="visually-hidden"> (opens in a new tab)</span></a>
+    <a class="btn btn-primary" href="${telHref(l.phone)}">${icon("phone")}Call ${esc(l.phone)}</a>
+    <a class="btn btn-secondary" href="${esc(l.web)}" target="_blank" rel="noopener noreferrer">Website${icon("external")}<span class="visually-hidden"> (opens in a new tab)</span></a>
   </div>
   <p class="muted small">This is a made-up sample, so the number and website aren't real.</p>
 </section>
 <section class="script-box" aria-labelledby="script-h">
-  <h2 id="script-h">What to say when you call</h2>
-  <p id="script-text">${esc(l.script)}</p>
-  <button type="button" class="btn btn-secondary" data-action="copy" data-target="script-text" data-key="copy">Copy</button>
+  <h2 id="script-h">${icon("chat")}What to say when you call</h2>
+  <p class="muted small">It's normal to feel nervous. You can read this word for word.</p>
+  <blockquote id="script-text">${esc(l.script)}</blockquote>
+  <button type="button" class="btn btn-secondary btn-small" data-action="copy" data-target="script-text" data-key="copy">${icon("copy")}Copy</button>
   <p class="copy-status small" role="status" aria-live="polite"></p>
 </section>
-<p class="confirmed">${esc(confirmedOnText(l, today))}. Call to confirm cost and openings.</p>
-<a class="btn btn-quiet" href="#/report/${encodeURIComponent(l.id)}" data-key="report-link">Report a problem</a>`;
+<p class="confirmed">${icon("check", "icon icon-sm")}<span>${esc(confirmedOnText(l, today))}. Call to confirm cost and openings.</span></p>
+<a class="btn btn-quiet btn-small" href="#/report/${encodeURIComponent(l.id)}" data-key="report-link">${icon("flag")}Report a problem</a>`;
 }
 
 function reportScreen(ctx, id) {
@@ -482,12 +567,15 @@ function reportScreen(ctx, id) {
   const l = listings.find((x) => x.id === id);
   if (!l || !isVisible(l)) return notAvailable(l, state);
   if (state.reportSentFor === id) {
-    return `<h1 tabindex="-1">Thanks for telling us</h1>
+    return `<div class="thanks">
+<span class="thanks-icon">${icon("check")}</span>
+<h1 tabindex="-1">Thanks for telling us</h1>
 <p class="lead" role="status">Thanks. In the real guide, this goes to our audit team, who re-check the listing and hide it until it's fixed.</p>
 <p class="muted small">In this prototype, your report is saved only on this device.</p>
 <div class="btn-row">
   <a class="btn btn-primary" href="#/listing/${encodeURIComponent(l.id)}">Back to the listing</a>
   <a class="btn btn-secondary" href="#/results">Back to results</a>
+</div>
 </div>`;
   }
   const radios = REPORT_REASONS.map(
@@ -496,10 +584,10 @@ function reportScreen(ctx, id) {
     <label for="reason-${r.value}">${r.label}</label>
   </div>`
   ).join("");
-  return `<p><a href="#/listing/${encodeURIComponent(l.id)}">← Back to the listing</a></p>
+  return `<p class="back-link"><a href="#/listing/${encodeURIComponent(l.id)}">${icon("back", "icon icon-sm")}Back to the listing</a></p>
 <h1 tabindex="-1">Report a problem</h1>
 <p class="lead">With: <strong>${esc(l.name)}</strong></p>
-<form class="report-form" data-action="report" data-id="${esc(l.id)}" novalidate>
+<form class="card report-form" data-action="report" data-id="${esc(l.id)}" novalidate>
   <fieldset>
     <legend>What went wrong?</legend>
     ${radios}
@@ -543,10 +631,10 @@ function verifyScreen(ctx) {
   return `<h1 tabindex="-1">How we verify</h1>
 <p class="lead">We only show options our team has checked recently, so you don't waste a call.</p>
 <ol class="steps">
-  <li>We call every listing every 60 to 90 days to check the phone number, cost, and whether they take new clients.</li>
-  <li>Listings confirmed in the last ${VERIFIED_UNDER_DAYS} days show as <span class="badge badge-ok badge-inline"><span class="badge-dot" aria-hidden="true"></span>Confirmed</span>.</li>
-  <li>From ${VERIFIED_UNDER_DAYS} to ${HIDE_AFTER_DAYS} days, they show <span class="badge badge-due badge-inline"><span class="badge-dot" aria-hidden="true"></span>Re-check due</span>. They should still work, but call to confirm.</li>
-  <li>After ${HIDE_AFTER_DAYS} days, or once someone reports a problem and we confirm it, the listing is hidden until we confirm it again.</li>
+  <li><span class="step-num" aria-hidden="true">1</span><span>We call every listing every 60 to 90 days to check the phone number, cost, and whether they take new clients.</span></li>
+  <li><span class="step-num" aria-hidden="true">2</span><span>Listings confirmed in the last ${VERIFIED_UNDER_DAYS} days show as <span class="badge badge-ok badge-inline">${icon("check", "icon icon-sm")}Confirmed</span></span></li>
+  <li><span class="step-num" aria-hidden="true">3</span><span>From ${VERIFIED_UNDER_DAYS} to ${HIDE_AFTER_DAYS} days, they show <span class="badge badge-due badge-inline">${icon("clock", "icon icon-sm")}Re-check due</span> They should still work, but call to confirm.</span></li>
+  <li><span class="step-num" aria-hidden="true">4</span><span>After ${HIDE_AFTER_DAYS} days, or once someone reports a problem and we confirm it, the listing is hidden until we confirm it again.</span></li>
 </ol>
 <section class="panel" aria-labelledby="live-h">
   <h2 id="live-h">Right now in this prototype</h2>
@@ -573,7 +661,7 @@ export const ROUTE_TITLES = {
 export function renderMain(route, ctx) {
   switch (route.name) {
     case "danger": return dangerScreen();
-    case "kinds": return kindsScreen();
+    case "kinds": return kindsScreen(ctx);
     case "coverage": return coverageScreen(ctx);
     case "results": return resultsScreen(ctx);
     case "listing": return listingScreen(ctx, route.id);
@@ -613,8 +701,9 @@ function startBrowser() {
     root.innerHTML = renderScreen(route, { listings, state, today: new Date() });
     document.title = `${ROUTE_TITLES[route.name]} · Front Door (prototype)`;
     if (routeKey !== lastRouteKey) {
-      // New screen: go to the top and move focus to the heading.
+      // New screen: go to the top, fade in gently, and move focus to the heading.
       window.scrollTo(0, 0);
+      root.querySelector("main")?.classList.add("enter");
       if (lastRouteKey !== null) root.querySelector("h1")?.focus();
       lastRouteKey = routeKey;
     } else if (focusKey) {
