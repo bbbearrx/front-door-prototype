@@ -875,7 +875,20 @@ function startBrowser() {
     if (routeKey !== lastRouteKey) {
       // New screen: go to the top, fade in gently, and move focus to the heading.
       window.scrollTo(0, 0);
-      root.querySelector("main")?.classList.add("enter");
+      const mainEl = root.querySelector("main");
+      const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      if (mainEl && !reduceMotion) {
+        mainEl.classList.add("enter");
+        const settle = () => {
+          mainEl.classList.remove("enter");
+          mainEl.style.opacity = "1";
+        };
+        mainEl.addEventListener("animationend", settle, { once: true });
+        // If the animation is skipped or cancelled, don't leave the page faded.
+        window.setTimeout(() => {
+          if (mainEl.isConnected && getComputedStyle(mainEl).opacity !== "1") settle();
+        }, 400);
+      }
       if (lastRouteKey !== null) root.querySelector("h1")?.focus();
       lastRouteKey = routeKey;
     } else if (focusKey) {

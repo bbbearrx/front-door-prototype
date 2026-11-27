@@ -59,9 +59,13 @@ body {
   padding: 0 var(--space);
 }
 
-main { padding-top: 1.5rem; padding-bottom: 3rem; }
+main { padding-top: 1.5rem; padding-bottom: 3rem; opacity: 1; }
 main:focus { outline: none; }
-main.enter { animation: settle 0.28s ease-out; }
+/* Fade only when motion is allowed, and keep the last frame at full opacity.
+   Reduced motion never applies this, so the page cannot sit at a partial fade. */
+@media (prefers-reduced-motion: no-preference) {
+  main.enter { animation: settle 0.28s ease-out forwards; }
+}
 @keyframes settle {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
@@ -582,7 +586,7 @@ legend { font-weight: 800; font-size: 1.12rem; margin-bottom: 0.5rem; color: var
   display: grid;
   place-items: center;
   border-radius: 12px;
-  color: #8a8478;
+  color: var(--muted);
   cursor: pointer;
 }
 .stars .star-icon { width: 1.85rem; height: 1.85rem; fill: none; }
@@ -646,4 +650,5 @@ legend { font-weight: 800; font-size: 1.12rem; margin-bottom: 0.5rem; color: var
     transition: none !important;
     scroll-behavior: auto !important;
   }
+  main, main.enter { opacity: 1; transform: none; }
 }
