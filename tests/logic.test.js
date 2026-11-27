@@ -317,6 +317,7 @@ describe("every route renders the safety pieces", () => {
   const routes = [
     "#/start", "#/danger", "#/kinds", "#/coverage", "#/results",
     `#/listing/${visibleId}`, `#/report/${visibleId}`, "#/how-we-verify",
+    "#/spread-the-word", "#/feedback",
     `#/listing/${hiddenIds[0]}`, "#/listing/does-not-exist", "#/nonsense",
   ];
   const states = [
@@ -372,6 +373,57 @@ describe("every route renders the safety pieces", () => {
     const html = renderScreen({ name: "results" }, { listings, state: { ...freshState(), path: "soon" }, today: new Date() });
     assert.ok(html.indexOf("Call 988") < html.indexOf("Sample "));
     assert.ok(html.indexOf("CAPS All Hours") < html.indexOf('class="card listing-card"'));
+  });
+
+  test("spread the word and feedback are reachable and stay anonymous", () => {
+    const ctx = { listings, state: freshState(), today: new Date() };
+    const start = renderScreen({ name: "start" }, ctx);
+    assert.ok(start.includes('href="#/spread-the-word"'));
+    assert.ok(start.includes('href="#/feedback"'));
+    assert.ok(start.includes("I'm not safe right now"));
+    assert.ok(start.includes("I need to talk to someone soon"));
+    assert.ok(start.includes("I want ongoing therapy or medication"));
+    assert.ok(start.includes("I'm not sure what I need"));
+
+    const spread = renderScreen({ name: "spread-the-word" }, ctx);
+    assert.ok(spread.includes("About Front Door"));
+    assert.ok(spread.includes("Spread the Word"));
+    assert.ok(spread.includes("word of mouth"));
+    for (const title of ["CAPS Social Media", "Student Emails", "Campus Posters", "Classroom Visits"]) {
+      assert.ok(spread.includes(title), title);
+    }
+    assert.ok(spread.includes("https://bbbearrx.github.io/front-door-prototype/?v=2#/start"));
+    assert.ok(spread.includes("<svg"));
+    assert.ok(!spread.includes("api.qrserver.com"));
+
+    const feedback = renderScreen({ name: "feedback" }, ctx);
+    assert.ok(feedback.includes("Have you used Front Door before?"));
+    assert.ok(feedback.includes("How easy was the website to use?"));
+    assert.ok(feedback.includes("Were you able to find the resources you needed?"));
+    assert.ok(feedback.includes("How helpful was your experience?"));
+    assert.ok(feedback.includes("What did you like about Front Door?"));
+    assert.ok(feedback.includes("What could we improve?"));
+    assert.ok(feedback.includes("Somewhat"));
+    assert.ok(feedback.includes("anonymous"));
+    assert.ok(feedback.includes('data-action="feedback"'));
+    assert.ok(!/type="email"|type="text"|name="email"|name="name"|name="student|diagnosis/i.test(feedback));
+
+    const thanks = renderScreen(
+      { name: "feedback" },
+      { ...ctx, state: { ...freshState(), feedbackSent: true } }
+    );
+    assert.ok(thanks.includes("Thank you"));
+    assert.ok(thanks.includes("Share another response"));
+    assert.ok(thanks.includes('data-action="feedback-again"'));
+  });
+
+  test("parseHash keeps every existing route and adds the two new ones", () => {
+    for (const name of ["start", "danger", "kinds", "coverage", "results", "how-we-verify", "spread-the-word", "feedback"]) {
+      assert.deepEqual(parseHash(`#/${name}`), { name, id: null });
+    }
+    assert.deepEqual(parseHash("#/listing/abc"), { name: "listing", id: "abc" });
+    assert.deepEqual(parseHash("#/report/abc"), { name: "report", id: "abc" });
+    assert.deepEqual(parseHash("#/nonsense"), { name: "start", id: null });
   });
 
   test("empty results say so and show 988 and CAPS All Hours", () => {

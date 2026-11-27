@@ -77,7 +77,8 @@ Every push to `main` updates the live site.
 
 - `index.html`: the single page
 - `styles.css`: all styles (phone-first)
-- `js/app.js`: routing (`#/start`, `#/danger`, `#/kinds`, `#/coverage`, `#/results`, `#/listing/<id>`, `#/report/<id>`, `#/how-we-verify`) and rendering
+- `js/app.js`: routing (`#/start`, `#/danger`, `#/kinds`, `#/coverage`, `#/results`, `#/listing/<id>`, `#/report/<id>`, `#/how-we-verify`, `#/spread-the-word`, `#/feedback`) and rendering
+- `js/poster-qr.js`: offline sample QR code for the campus-poster card (no external service)
 - `js/logic.js`: status, matching and filtering as pure functions, no DOM
 - `js/config.js`: settings, including the 60/90-day cut-offs and `FEEDBACK_FORM_URL`
 - `data/listings.json`: the 16 made-up sample listings
@@ -86,4 +87,14 @@ Every push to `main` updates the live site.
 
 ## Privacy
 
-No accounts, cookies, analytics or outside scripts. The only thing saved is demo "Report a problem" submissions, kept in your browser's localStorage on your own device (key `frontDoorDemoReports`), with the listing id, the reason, the optional note, and the time.
+No accounts, cookies, analytics or outside scripts. Two things can be saved in your browser's localStorage on your own device, and neither is sent anywhere:
+
+- Demo "Report a problem" submissions (key `frontDoorDemoReports`), with the listing id, the reason, the optional note, and the time.
+- Anonymous "Share your feedback" responses (key `frontDoorDemoFeedback`). The survey does not ask for a name, email, student ID, or health information.
+
+## Spread the word and feedback
+
+Version 2 adds two screens. Everything else, including `#/start` and the `?v=2` link, works as before.
+
+- `#/spread-the-word` (also linked from the start page and the footer) explains that the team first relied on word of mouth, then lists four outreach ideas: CAPS social media, student emails, campus posters, and classroom visits. The poster card includes a sample QR code drawn in the page. It points at `https://bbbearrx.github.io/front-door-prototype/?v=2#/start`.
+- `#/feedback` is a short anonymous survey. Submitting it shows a thank-you message and can save the answers on this device only.
