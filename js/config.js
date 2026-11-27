@@ -28,3 +28,7 @@ export const CRISIS = Object.freeze({
 
 // Where demo "Report a problem" submissions are saved on this device.
 export const REPORTS_STORAGE_KEY = "frontDoorDemoReports";
+
+// Where anonymous "Share your feedback" responses are saved on this device.
+// Nothing in the survey is sent over the network.
+export const FEEDBACK_STORAGE_KEY = "frontDoorDemoFeedback";

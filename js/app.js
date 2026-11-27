@@ -3,11 +3,13 @@
 import {
   CRISIS,
   FEEDBACK_FORM_URL,
+  FEEDBACK_STORAGE_KEY,
   INITIAL_RESULTS,
   REPORTS_STORAGE_KEY,
   VERIFIED_UNDER_DAYS,
   HIDE_AFTER_DAYS,
 } from "./config.js";
+import { POSTER_QR_SVG, POSTER_URL } from "./poster-qr.js";
 import {
   STATUS,
   getStatus,
@@ -169,6 +171,11 @@ const ICONS = {
   pin: '<path d="M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
   door2: '<path d="M6 20V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v15"/><path d="M4 20h16"/><circle cx="14.5" cy="12.5" r=".8" fill="currentColor"/>',
   heart: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+  mail: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m4 7.5 8 6 8-6"/>',
+  poster: '<rect x="6" y="3" width="12" height="15" rx="1.5"/><path d="M9 7h6M9 10.5h6M9 14h3.5"/><path d="M12 18v3M8 21h8"/>',
+  users: '<circle cx="9" cy="8.5" r="2.6"/><circle cx="16" cy="9.2" r="2"/><path d="M4.2 19c.6-2.8 2.6-4.2 4.8-4.2s4.2 1.4 4.8 4.2"/><path d="M14.2 14.9c1.4-.2 2.8.5 3.5 2.2"/>',
+  megaphone: '<path d="M4 10.5v3h2.2L15 18V6L6.2 10.5z"/><path d="M15 10a2.5 2.5 0 0 1 0 4"/><path d="M7 13.6 8 18"/>',
+  star: '<path d="m12 3.2 2.35 4.76 5.25.76-3.8 3.7.9 5.23L12 15.9l-4.7 2.75.9-5.23-3.8-3.7 5.25-.76z"/>',
   copy: '<rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2"/><path d="M15.5 8.5V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v9.5a1 1 0 0 0 1 1h3.5"/>',
   flag: '<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
   chevron: '<path d="m9.5 6 6 6-6 6"/>',
@@ -205,13 +212,14 @@ export function freshState() {
     showAll: false,
     filtersOpen: false,
     reportSentFor: null,
+    feedbackSent: false,
   };
 }
 
 export function parseHash(hash) {
   const clean = String(hash || "").replace(/^#\/?/, "");
   const [name, id] = clean.split("/");
-  const known = ["start", "danger", "kinds", "coverage", "results", "listing", "report", "how-we-verify"];
+  const known = ["start", "danger", "kinds", "coverage", "results", "listing", "report", "how-we-verify", "spread-the-word", "feedback"];
   if (!known.includes(name)) return { name: "start", id: null };
   return { name, id: id ? decodeURIComponent(id) : null };
 }
@@ -239,6 +247,8 @@ function footer(feedbackUrl) {
   <div class="wrap">
     <ul class="footer-links">
       <li><a href="#/how-we-verify">${icon("shield", "icon icon-sm")}How we verify</a></li>
+      <li><a href="#/spread-the-word">${icon("megaphone", "icon icon-sm")}Spread the word</a></li>
+      <li><a href="#/feedback">${icon("heart", "icon icon-sm")}Share your feedback</a></li>
       ${feedback}
     </ul>
     <p>A student project for the Horizon Collective at USF. Not an official USF or CAPS service.</p>
@@ -248,7 +258,7 @@ function footer(feedbackUrl) {
 
 function layout(main, ctx) {
   return `<a class="skip-link" href="#main">Skip to main content</a>
-<div class="proto-banner" role="note"><span class="proto-pill" aria-hidden="true">Prototype</span> Prototype for class testing. Listings are made-up samples. In an emergency, call 911.</div>
+<div class="proto-banner" role="note"><span class="proto-pill" aria-hidden="true">Prototype</span><span class="version-note">v2</span> Prototype for class testing. Listings are made-up samples. In an emergency, call 911.</div>
 ${crisisBar()}
 <header class="site-header">
   <div class="wrap header-row">
@@ -354,7 +364,14 @@ function startScreen() {
   ${choice({ href: "#/coverage", title: PATHS.ongoing, note: "Find care that keeps going, and a way to pay for it.", ic: "calendar", key: "path-ongoing", attrs: ' data-action="set-path" data-path="ongoing"' })}
   ${choice({ href: "#/kinds", title: PATHS.unsure, note: "See the four kinds of help in plain words.", ic: "compass", key: "path-unsure", attrs: ' data-action="set-path" data-path="unsure"' })}
 </ul>
-<p class="privacy-note">${icon("shield", "icon icon-sm")}We don't ask for your name, and we don't save your answers.</p>`;
+<p class="privacy-note">${icon("shield", "icon icon-sm")}We don't ask for your name, and we don't save your answers.</p>
+<section class="start-extra" aria-labelledby="about-entry-h">
+  <h2 id="about-entry-h">About Front Door</h2>
+  <ul class="choice-list">
+    ${choice({ href: "#/spread-the-word", title: "Spread the Word", note: "See how we plan to share Front Door with more students.", ic: "megaphone", key: "nav-spread" })}
+    ${choice({ href: "#/feedback", title: "Share Your Feedback", note: "A short anonymous survey. No name or email.", ic: "heart", key: "nav-feedback" })}
+  </ul>
+</section>`;
 }
 
 function dangerScreen() {
@@ -645,6 +662,138 @@ function verifyScreen(ctx) {
 <p class="muted small">Front Door doesn't give advice or diagnose anything. It helps you find a place to call.</p>`;
 }
 
+// ---------- About: outreach and anonymous feedback ----------
+
+const OUTREACH = [
+  {
+    icon: "globe",
+    title: "CAPS Social Media",
+    text: "CAPS can post about Front Door on its social media accounts.",
+  },
+  {
+    icon: "mail",
+    title: "Student Emails",
+    text: "CAPS can send emails to USF students explaining what Front Door is and how it can help them.",
+  },
+  {
+    icon: "poster",
+    title: "Campus Posters",
+    text: "Put up posters around campus with information about Front Door and a QR code.",
+    qr: true,
+  },
+  {
+    icon: "users",
+    title: "Classroom Visits",
+    text: "Introduce Front Door in core classes so students from different majors can learn about it.",
+  },
+];
+
+function posterFigure() {
+  const shown = POSTER_URL.replace(/^https:\/\//, "");
+  return `<figure class="qr-sample">
+  ${POSTER_QR_SVG}
+  <figcaption>A sample QR code for a campus poster. It opens Front Door, and it is drawn on this page so it works offline.</figcaption>
+  <p class="qr-url small"><a href="${esc(POSTER_URL)}">${esc(shown)}</a></p>
+</figure>`;
+}
+
+function spreadScreen() {
+  const cards = OUTREACH.map(
+    (item) => `<li class="card outreach-card">
+    <div class="kind-head"><span class="choice-icon">${icon(item.icon)}</span><h3>${item.title}</h3></div>
+    <p>${item.text}</p>
+    ${item.qr ? posterFigure() : ""}
+  </li>`
+  ).join("");
+  return `<p class="back-link"><a href="#/start">${icon("back", "icon icon-sm")}Back to the start</a></p>
+<h1 tabindex="-1">About Front Door</h1>
+<p class="lead">Front Door is a student prototype that helps USF students find mental health resources and connect with CAPS.</p>
+<h2>Spread the Word</h2>
+<p>The team originally relied on word of mouth. Now we plan these four ways to tell more students about Front Door.</p>
+<ul class="card-list">${cards}</ul>
+<p class="answer-note">Tried Front Door? <a href="#/feedback">Share your feedback</a>. It's anonymous.</p>`;
+}
+
+function choiceRadios(name, options) {
+  return options
+    .map(
+      (o) => `<div class="radio">
+    <input type="radio" id="${name}-${o.value}" name="${name}" value="${o.value}">
+    <label for="${name}-${o.value}">${o.label}</label>
+  </div>`
+    )
+    .join("");
+}
+
+function starRating(name, legend) {
+  const stars = [1, 2, 3, 4, 5]
+    .map((n) => {
+      const label = n === 1 ? "1 star" : `${n} stars`;
+      return `<input type="radio" id="${name}-${n}" name="${name}" value="${n}">
+    <label for="${name}-${n}"><span class="visually-hidden">${label}</span>${icon("star", "icon star-icon")}</label>`;
+    })
+    .join("");
+  return `<fieldset class="star-field">
+  <legend id="${name}-legend">${legend}</legend>
+  <div class="stars" data-star-group="${name}">
+    ${stars}
+  </div>
+  <p class="star-value small muted" id="${name}-value">Choose 1 to 5 stars.</p>
+  <p class="form-error small" id="${name}-error" role="alert" hidden>Please choose a star rating.</p>
+</fieldset>`;
+}
+
+function feedbackScreen(ctx) {
+  if (ctx.state.feedbackSent) {
+    return `<div class="thanks">
+  <span class="thanks-icon">${icon("heart")}</span>
+  <h1 tabindex="-1">Thank you</h1>
+  <p class="lead" role="status">Thanks for sharing. Your note helps us make Front Door more useful for USF students.</p>
+  <p>You can send another response if something else comes to mind.</p>
+  <p class="muted small">Responses are anonymous and stay on this device. Nothing was sent.</p>
+  <div class="btn-row">
+    <button type="button" class="btn btn-primary" data-action="feedback-again" data-key="feedback-again">Share another response</button>
+    <a class="btn btn-secondary" href="#/start">Back to the start</a>
+  </div>
+</div>`;
+  }
+  return `<p class="back-link"><a href="#/start">${icon("back", "icon icon-sm")}Back to the start</a></p>
+<h1 tabindex="-1">Share Your Feedback</h1>
+<p class="lead">Tell us what worked and what we can do better. It takes about a minute.</p>
+<p class="answer-note">Responses are anonymous. We don't ask for your name, email, student ID, or anything about your health.</p>
+<form class="card survey-form" data-action="feedback" method="post" action="#/feedback" autocomplete="off" novalidate>
+  <fieldset>
+    <legend>Have you used Front Door before?</legend>
+    ${choiceRadios("used", [
+      { value: "yes", label: "Yes" },
+      { value: "no", label: "No" },
+    ])}
+    <p class="form-error small" id="used-error" role="alert" hidden>Please choose Yes or No.</p>
+  </fieldset>
+  ${starRating("ease", "How easy was the website to use?")}
+  <fieldset>
+    <legend>Were you able to find the resources you needed?</legend>
+    ${choiceRadios("found", [
+      { value: "yes", label: "Yes" },
+      { value: "no", label: "No" },
+      { value: "somewhat", label: "Somewhat" },
+    ])}
+    <p class="form-error small" id="found-error" role="alert" hidden>Please choose Yes, No, or Somewhat.</p>
+  </fieldset>
+  ${starRating("helpful", "How helpful was your experience?")}
+  <div class="field">
+    <label for="liked">What did you like about Front Door? <span class="muted">(optional)</span></label>
+    <textarea id="liked" rows="3" maxlength="1000"></textarea>
+  </div>
+  <div class="field">
+    <label for="improve">What could we improve? <span class="muted">(optional)</span></label>
+    <textarea id="improve" rows="3" maxlength="1000"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary" data-key="feedback-submit">Submit</button>
+</form>
+<p class="muted small">Nothing you type here is sent anywhere. In this prototype it stays on this device.</p>`;
+}
+
 // ---------- Router ----------
 
 export const ROUTE_TITLES = {
@@ -656,6 +805,8 @@ export const ROUTE_TITLES = {
   listing: "Listing",
   report: "Report a problem",
   "how-we-verify": "How we verify",
+  "spread-the-word": "Spread the Word",
+  feedback: "Share Your Feedback",
 };
 
 export function renderMain(route, ctx) {
@@ -667,6 +818,8 @@ export function renderMain(route, ctx) {
     case "listing": return listingScreen(ctx, route.id);
     case "report": return reportScreen(ctx, route.id);
     case "how-we-verify": return verifyScreen(ctx);
+    case "spread-the-word": return spreadScreen();
+    case "feedback": return feedbackScreen(ctx);
     default: return startScreen();
   }
 }
@@ -676,6 +829,25 @@ export function renderScreen(route, ctx) {
 }
 
 // ---------- Browser only ----------
+
+function paintStarLabels(wrap, upTo) {
+  if (!wrap) return;
+  for (const input of wrap.querySelectorAll("input")) {
+    const label = wrap.querySelector(`label[for="${input.id}"]`);
+    if (label) label.classList.toggle("is-on", Number(input.value) <= upTo);
+  }
+}
+
+function saveFeedback(response) {
+  try {
+    const all = JSON.parse(localStorage.getItem(FEEDBACK_STORAGE_KEY) || "[]");
+    all.push(response);
+    localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(all));
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 function saveReport(report) {
   try {
@@ -718,6 +890,15 @@ function startBrowser() {
   }
 
   root.addEventListener("click", (e) => {
+    // Clear a survey error as soon as that question is answered, including label clicks.
+    const hit = e.target.closest?.(".radio, .stars label");
+    if (hit?.closest("form[data-action='feedback']")) {
+      const input = hit.htmlFor
+        ? document.getElementById(hit.htmlFor)
+        : hit.querySelector("input");
+      const error = input?.name ? document.getElementById(`${input.name}-error`) : null;
+      if (error) error.hidden = true;
+    }
     const el = e.target.closest("[data-action]");
     if (!el || el.tagName === "FORM" || el.tagName === "SELECT") return;
     const action = el.dataset.action;
@@ -754,6 +935,10 @@ function startBrowser() {
       render();
       // Move focus to the first newly shown card.
       root.querySelectorAll(".listing-card .card-title a")[before]?.focus();
+    } else if (action === "feedback-again") {
+      state.feedbackSent = false;
+      lastRouteKey = "__reset";
+      render();
     } else if (action === "copy") {
       const text = document.getElementById(el.dataset.target)?.textContent ?? "";
       const status = root.querySelector(".copy-status");
@@ -775,12 +960,73 @@ function startBrowser() {
       state.coverage = el.value || null;
       state.showAll = false;
       render();
+      return;
+    }
+    if (el.type === "radio" && el.form?.dataset?.action === "feedback") {
+      const error = document.getElementById(`${el.name}-error`);
+      if (error) error.hidden = true;
+      const wrap = el.closest(".stars");
+      if (wrap) {
+        paintStarLabels(wrap, Number(el.value));
+        const hint = document.getElementById(`${el.name}-value`);
+        if (hint) hint.textContent = `${el.value} out of 5 stars`;
+      }
     }
   });
 
+  // Star hover fills every star up to the one under the pointer, then restores the saved rating.
+  root.addEventListener("pointerover", (e) => {
+    const label = e.target.closest?.(".stars label");
+    if (!label || !root.contains(label)) return;
+    const wrap = label.closest(".stars");
+    const input = document.getElementById(label.htmlFor);
+    if (!wrap || !input) return;
+    const checked = wrap.querySelector("input:checked");
+    const selected = checked ? Number(checked.value) : 0;
+    paintStarLabels(wrap, Math.max(selected, Number(input.value)));
+  });
+  root.addEventListener("pointerout", (e) => {
+    const wrap = e.target.closest?.(".stars");
+    if (!wrap || !root.contains(wrap)) return;
+    if (e.relatedTarget && wrap.contains(e.relatedTarget)) return;
+    const checked = wrap.querySelector("input:checked");
+    paintStarLabels(wrap, checked ? Number(checked.value) : 0);
+  });
+
   root.addEventListener("submit", (e) => {
-    const form = e.target.closest('form[data-action="report"]');
-    if (!form) return;
+    const form = e.target.closest("form");
+    if (!form || !root.contains(form)) return;
+    if (form.dataset.action === "feedback") {
+      e.preventDefault();
+      const used = form.querySelector('input[name="used"]:checked')?.value || "";
+      const ease = form.querySelector('input[name="ease"]:checked')?.value || "";
+      const found = form.querySelector('input[name="found"]:checked')?.value || "";
+      const helpful = form.querySelector('input[name="helpful"]:checked')?.value || "";
+      const checks = [
+        ["used-error", used, form.querySelector('input[name="used"]')],
+        ["ease-error", ease, form.querySelector('input[name="ease"]')],
+        ["found-error", found, form.querySelector('input[name="found"]')],
+        ["helpful-error", helpful, form.querySelector('input[name="helpful"]')],
+      ];
+      let firstInvalid = null;
+      for (const [id, value, field] of checks) {
+        const error = form.querySelector(`#${id}`);
+        if (error) error.hidden = Boolean(value);
+        if (!value && !firstInvalid) firstInvalid = field;
+      }
+      if (firstInvalid) {
+        firstInvalid.focus();
+        return;
+      }
+      const liked = form.querySelector("#liked").value.trim().slice(0, 1000);
+      const improve = form.querySelector("#improve").value.trim().slice(0, 1000);
+      saveFeedback({ used, ease, found, helpful, liked, improve, time: new Date().toISOString() });
+      state.feedbackSent = true;
+      lastRouteKey = "__reset";
+      render();
+      return;
+    }
+    if (form.dataset.action !== "report") return;
     e.preventDefault();
     const reason = form.querySelector('input[name="reason"]:checked')?.value;
     const error = form.querySelector("#reason-error");
@@ -804,6 +1050,7 @@ function startBrowser() {
   window.addEventListener("hashchange", () => {
     const route = parseHash(location.hash);
     if (route.name !== "report") state.reportSentFor = null;
+    if (route.name !== "feedback") state.feedbackSent = false;
     render();
   });
 
